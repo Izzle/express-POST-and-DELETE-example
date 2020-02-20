@@ -43,6 +43,11 @@ app.post('/', (req, res, next) => { // eslint-disable-line no-unused-vars
   res.send('POST request received');
 });
 
+app.get('/user', (req, res, next) => { // eslint-disable-line no-unused-vars
+  res
+    .json(users);
+});
+
 app.post('/user', (req, res, next) => { // eslint-disable-line no-unused-vars
   // get the data
   const { username, password, favoriteClub, newsLetter=false} = req.body;
@@ -112,11 +117,32 @@ app.post('/user', (req, res, next) => { // eslint-disable-line no-unused-vars
     newsLetter
   };
 
+  users.push(newUser);
+  
   res
     .status(201)
     .location(`http://localhost:8000/user/${id}`)
     .json(newUser);
 
+});
+
+app.delete('/user/:userId', (req, res, next) => { // eslint-disable-line no-unused-vars
+  const { userId } = req.params;
+
+  const index = users.findIndex(u => u.id === userId);
+
+  // make sure we actually find a user with that id
+  if (index === -1) {
+    return res
+      .status(404)
+      .send('User not found');
+  }
+
+  users.splice(index, 1);
+
+  res
+    .status(204) // No content
+    .end();
 });
 
 app.use(function errorHandler(error, req, res, next) { // eslint-disable-line no-unused-vars
